@@ -5,7 +5,7 @@
 	import SignedOut from 'clerk-sveltekit/client/SignedOut.svelte';
 </script>
 
-<SignedIn>
+<SignedIn >
 	<UserButton afterSignOutUrl="/" />
 </SignedIn>
 <SignedOut>
