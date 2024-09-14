@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EventTheme {
+  ARTS_CULTURE
+  BUSINESS_FINANCE
+  EDUCATION
+  ENVIRONMENT
+  HEALTH_WELLNESS
+  COMMUNITY_BUILDING
+  INNOVATION
+  LEADERSHIP
+  PERSONAL_DEVELOPMENT
+  POLITICS_GOVERNANCE
+  SCIENCE
+  SOCIAL_JUSTICE
+  SPORTS_RECREATION
+  TRAVEL_ADVENTURE
+  ENTERTAINMENT
+  FOOD_CULINARY
+  HISTORY
+  LITERATURE
+  NETWORKING
+  SUSTAINABILITY
+}
+
+model event {
+  id          String       @id @default(cuid())
+  title       String
+  description String
+  startTime   DateTime
+  endTime     DateTime
+  location    String
+  themes      EventTheme[]
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  recommendations recommendations[]
+}
+
+model user {
+  user_id           String            @id
+  preferences       EventTheme[]
+  recommendedEvents recommendations[]
+}
+
+model recommendations {
+  event   event  @relation(fields: [eventId], references: [id])
+  eventId String
+  user    user   @relation(fields: [userId], references: [user_id])
+  userId  String
+
+  @@id([eventId, userId])
+}
