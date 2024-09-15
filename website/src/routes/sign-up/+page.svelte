@@ -2,6 +2,8 @@
 	import SignUp from 'clerk-sveltekit/client/SignUp.svelte';
 </script>
 
-<div>
-	<SignUp redirectUrl="/dashboard" />
+<div class="flex items-center justify-center h-screen">
+	<div class="w-1/2">
+		<SignUp redirectUrl="/dashboard" />
+	</div>
 </div>
