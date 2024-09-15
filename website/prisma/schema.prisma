@@ -37,19 +37,19 @@ enum EventTheme {
 }
 
 model event {
-  id          String       @id @default(cuid())
-  title       String?      @default("Unitled Event")
-  description String?      @default("No description provided")
+  id          String    @id @default(cuid())
+  title       String?   @default("Unitled Event")
+  description String?   @default("No description provided")
   startTime   DateTime?
   endTime     DateTime?
   location    String?
-  themes      EventTheme[] @default([])
+  themes      String[]  @default([])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model user {
-  user_id     String       @id
-  preferences EventTheme[] @default([])
+  user_id     String   @id
+  preferences String[] @default([])
 }
