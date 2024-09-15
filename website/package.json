@@ -32,6 +32,8 @@
 	"type": "module",
 	"dependencies": {
 		"@prisma/client": "^5.19.1",
-		"clerk-sveltekit": "^0.4.2"
+		"@vercel/blob": "^0.23.4",
+		"clerk-sveltekit": "^0.4.2",
+		"openai": "^4.61.0"
 	}
 }
