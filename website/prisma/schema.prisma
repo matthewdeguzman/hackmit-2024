@@ -38,29 +38,18 @@ enum EventTheme {
 
 model event {
   id          String       @id @default(cuid())
-  title       String
-  description String
-  startTime   DateTime
-  endTime     DateTime
-  location    String
-  themes      EventTheme[]
+  title       String       @default("Unitled Event")
+  description String       @default("No description provided")
+  startTime   DateTime?
+  endTime     DateTime?
+  location    String?
+  themes      EventTheme[] @default([])
 
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  recommendations recommendations[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model user {
-  user_id           String            @id
-  preferences       EventTheme[]
-  recommendedEvents recommendations[]
-}
-
-model recommendations {
-  event   event  @relation(fields: [eventId], references: [id])
-  eventId String
-  user    user   @relation(fields: [userId], references: [user_id])
-  userId  String
-
-  @@id([eventId, userId])
+  user_id     String       @id
+  preferences EventTheme[] @default([])
 }
