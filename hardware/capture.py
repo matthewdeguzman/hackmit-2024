@@ -1,4 +1,7 @@
+from io import BytesIO
+import time
 from signal import pause
+import os
 from typing import Literal
 import cv2
 import requests as req
@@ -15,7 +18,7 @@ cam_port = 0
 cam = cv2.VideoCapture(cam_port)
 
 green, red = LED(23), LED(24)
-
+CAPTURE = None
 
 def setReady(ready: Literal['ready'] | Literal['wait']):
     if ready == 'ready':
@@ -30,37 +33,35 @@ def setReady(ready: Literal['ready'] | Literal['wait']):
 #     return cv2.imencode('.jpg', image)[1]
 
 def capture() -> str:
-    print("Capturing... ", end='', flush=True)
-    succ = False
-    while not succ:
-        succ, image = cam.read()
-    
-    # cv2.imwrite('capture.jpeg', image)
-    print("DONE")
+    global CAPTURE
+    ret, CAPTURE = cam.read()
+    if ret: 
+        cv2.imwrite('capture.jpeg', CAPTURE)
 
         
 def upload():
-    print("Uploading... ", end='', flush=True)
-    
-    send = req.post("https://tmpfiles.org/api/v1/upload",
-                    files={
-                        'file': open('capture.jpeg', 'rb')
-                    })
-    
-    url: str = send.json()['data']['url'].replace('.org/', '.org/dl/')
-    
-    resp = req.get(f"{BASE_URL}/api/create_event?url={escape(url)}",
-             headers={
-                "Authorization": f"Bearer {TOKEN}",
-             })
-    print(f"DONE [{resp.status_code}]")
-    print(resp.text)
+    global CAPTURE
+    if (CAPTURE is not None):
+        print("Uploading... ", end='', flush=True)
+        with open('capture.jpeg', 'rb') as image_file:
+            send = req.post("https://tmpfiles.org/api/v1/upload",
+                            files={
+                                'file': image_file
+                            })
+        
+        url: str = send.json()['data']['url'].replace('.org/', '.org/dl/')
+        
+        resp = req.get(f"{BASE_URL}/api/create_event?url={escape(url)}",
+                headers={
+                    "Authorization": f"Bearer {TOKEN}",
+                })
+        print(f"DONE [{resp.status_code}]")
+        print(resp.text)
     
 def capture_and_upload():
     print("=> TRIGGERED!")
     
     setReady('wait')
-    capture()
     upload()
     setReady('ready')
     
@@ -73,14 +74,17 @@ if __name__ == "__main__":
     
     setReady('ready')
     
-    # button = Button(25, pull_up=True, bounce_time=.1)
-    # button.when_activated = capture_and_upload
+    button = Button(25, pull_up=True, bounce_time=.1)
+    button.when_activated = capture_and_upload
+
+    while True:
+        capture()
     
     # buzzer = TonalBuzzer(16)
     # buzzer.play(Tone('A3'))
-    while True:
-        input("Enter to test... ")
-        capture_and_upload()
+    # while True:
+    #     input("Enter to test... ")
+    #     capture_and_upload()
         
     
     print("DONE\n")
