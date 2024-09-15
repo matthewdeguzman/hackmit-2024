@@ -13,29 +13,6 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
-enum EventTheme {
-  ARTS_CULTURE
-  BUSINESS_FINANCE
-  EDUCATION
-  ENVIRONMENT
-  HEALTH_WELLNESS
-  COMMUNITY_BUILDING
-  INNOVATION
-  LEADERSHIP
-  PERSONAL_DEVELOPMENT
-  POLITICS_GOVERNANCE
-  SCIENCE
-  SOCIAL_JUSTICE
-  SPORTS_RECREATION
-  TRAVEL_ADVENTURE
-  ENTERTAINMENT
-  FOOD_CULINARY
-  HISTORY
-  LITERATURE
-  NETWORKING
-  SUSTAINABILITY
-}
-
 model event {
   id          String    @id @default(cuid())
   title       String?   @default("Unitled Event")
