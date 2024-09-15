@@ -18,10 +18,15 @@ export async function POST({ request }) {
 		return new Response('Invalid token', { status: 401 });
 	}
 
-	const image = await request.arrayBuffer();
+	const formData = await request.formData();
+	const image = formData.get('image')?.toString();
+	if (!image) {
+		return new Response('No image provided', { status: 400 });
+	}
+
 	const buffer = Buffer.from(image);
 	if (!buffer) {
-		return new Response('No image provided', { status: 400 });
+		return new Response('could not buffer', { status: 400 });
 	}
 	const base64Image = buffer.toString('base64');
 
