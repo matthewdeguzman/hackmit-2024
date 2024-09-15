@@ -38,8 +38,8 @@ enum EventTheme {
 
 model event {
   id          String       @id @default(cuid())
-  title       String       @default("Unitled Event")
-  description String       @default("No description provided")
+  title       String?      @default("Unitled Event")
+  description String?      @default("No description provided")
   startTime   DateTime?
   endTime     DateTime?
   location    String?
