@@ -74,7 +74,8 @@ export async function GET({ request, url }) {
 				themes: ev.tags ?? undefined
 			}
 		});
-	} catch {
+	} catch (e) {
+		console.error(e);
 		return new Response('Could not extract post event information', { status: 400 });
 	}
 
