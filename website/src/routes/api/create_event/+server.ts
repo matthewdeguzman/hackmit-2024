@@ -18,6 +18,7 @@ export async function POST({ request }) {
 	}
 
 	const url = await request.text();
+	console.log('url', url);
 	if (!url) {
 		return new Response('No image provided', { status: 400 });
 	}
