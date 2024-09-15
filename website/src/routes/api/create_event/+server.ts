@@ -68,8 +68,8 @@ export async function GET({ request, url }) {
 			data: {
 				title: ev.title ?? undefined,
 				description: ev.description ?? undefined,
-				startTime: new Date(ev.start_time) ?? undefined,
-				endTime: new Date(ev.end_time) ?? undefined,
+				startTime: new Date(ev.start_time ?? ''),
+				endTime: new Date(ev.end_time ?? ''),
 				location: ev.location ?? undefined,
 				themes: ev.tags ?? undefined
 			}
