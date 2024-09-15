@@ -13,22 +13,14 @@ export async function POST({ request }) {
 	}
 
 	const token = bearer.split(' ')[1];
-	console.log(token);
 	if (token !== SUPER_SECRET_TOKEN) {
 		return new Response('Invalid token', { status: 401 });
 	}
 
-	const formData = await request.formData();
-	const image = formData.get('image')?.toString();
-	if (!image) {
+	const url = await request.text();
+	if (!url) {
 		return new Response('No image provided', { status: 400 });
 	}
-
-	const buffer = Buffer.from(image);
-	if (!buffer) {
-		return new Response('could not buffer', { status: 400 });
-	}
-	const base64Image = buffer.toString('base64');
 
 	const example_output = {
 		title: 'Event Title',
@@ -56,7 +48,7 @@ export async function POST({ request }) {
 					{
 						type: 'image_url',
 						image_url: {
-							url: `data:image/jpeg;base64,${base64Image}`
+							url: url
 						}
 					}
 				]
