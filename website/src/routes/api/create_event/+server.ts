@@ -1,10 +1,30 @@
 import OpenAI from 'openai';
 import { OPENAI_API_KEY, SUPER_SECRET_TOKEN } from '$env/static/private';
-import { EventTheme } from '@prisma/client';
 import prisma from '$lib/prisma';
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
-const themes: string = Object.values(EventTheme).join(', ');
+const themes: string[] = [
+	'ARTS_CULTURE',
+	'BUSINESS_FINANCE',
+	'EDUCATION',
+	'ENVIRONMENT',
+	'HEALTH_WELLNESS',
+	'COMMUNITY_BUILDING',
+	'INNOVATION',
+	'LEADERSHIP',
+	'PERSONAL_DEVELOPMENT',
+	'POLITICS_GOVERNANCE',
+	'SCIENCE',
+	'SOCIAL_JUSTICE',
+	'SPORTS_RECREATION',
+	'TRAVEL_ADVENTURE',
+	'ENTERTAINMENT',
+	'FOOD_CULINARY',
+	'HISTORY',
+	'LITERATURE',
+	'NETWORKING',
+	'SUSTAINABILITY'
+];
 
 export async function GET({ request, url }) {
 	const bearer = request.headers.get('Authorization');
@@ -70,8 +90,7 @@ export async function GET({ request, url }) {
 				description: ev.description ?? undefined,
 				startTime: new Date(ev.start_time ?? ''),
 				endTime: new Date(ev.end_time ?? ''),
-				location: ev.location ?? undefined,
-				themes: ev.tags ?? undefined
+				location: ev.location ?? undefined
 			}
 		});
 	} catch (e) {
