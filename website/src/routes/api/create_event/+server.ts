@@ -6,7 +6,7 @@ import prisma from '$lib/prisma';
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 const themes: string = Object.values(EventTheme).join(', ');
 
-export async function POST({ request }) {
+export async function GET({ request, url }) {
 	const bearer = request.headers.get('Authorization');
 	if (!bearer) {
 		return new Response('No headers provided', { status: 400 });
@@ -17,9 +17,8 @@ export async function POST({ request }) {
 		return new Response('Invalid token', { status: 401 });
 	}
 
-	const url = await request.text();
-	console.log('url', url);
-	if (!url) {
+	const downloadUrl = url.searchParams.get('url');
+	if (!downloadUrl) {
 		return new Response('No image provided', { status: 400 });
 	}
 
@@ -49,7 +48,7 @@ export async function POST({ request }) {
 					{
 						type: 'image_url',
 						image_url: {
-							url: url
+							url: downloadUrl
 						}
 					}
 				]
