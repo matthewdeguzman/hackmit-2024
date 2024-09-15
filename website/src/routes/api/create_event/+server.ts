@@ -1,7 +1,10 @@
 import OpenAI from 'openai';
 import { OPENAI_API_KEY, SUPER_SECRET_TOKEN } from '$env/static/private';
+import { EventTheme } from '@prisma/client';
+import prisma from '$lib/prisma';
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+const themes: string = Object.values(EventTheme).join(', ');
 
 export async function POST({ request }) {
 	const bearer = request.headers.get('Authorization');
@@ -27,7 +30,8 @@ export async function POST({ request }) {
 		description: 'Event Description',
 		start_time: 'Event Start Date',
 		end_time: 'Event End Date',
-		location: 'Event Location'
+		location: 'Event Location',
+		tags: ['tag 1', 'tag 2', 'tag 3']
 	};
 
 	const response = await openai.chat.completions.create({
@@ -35,7 +39,7 @@ export async function POST({ request }) {
 		messages: [
 			{
 				role: 'system',
-				content: `You are a helpful assistant who extrapolates information from posters. You should retrieve the title, description, start time and date in ISO format, end time and date in ISO format, and location of the event from the poster. If the poster does not contain the information, do not try to make it up. You should reply with the extracted information as follows: \n${JSON.stringify(example_output)}`
+				content: `You are a helpful assistant who extrapolates information from posters. You should retrieve the title, description, start time and date in ISO format, end time and date in ISO format, and location of the event from the poster. If the poster does not contain the information, do not try to make it up. Furthermore, you should classify the event into a list of tags that closely match the vibe of the event from one of the following classifications: ${themes}. You should reply with the extracted information as follows: \n${JSON.stringify(example_output)}`
 			},
 			{
 				role: 'user',
@@ -55,5 +59,27 @@ export async function POST({ request }) {
 		],
 		max_tokens: 150
 	});
-	return new Response(response.choices[0].message.content, { status: 200 });
+
+	const content = response.choices[0].message.content;
+	if (!content) {
+		return new Response('Could not extract event information', { status: 400 });
+	}
+
+	try {
+		const ev = JSON.parse(content);
+		await prisma.event.create({
+			data: {
+				title: ev.title ?? undefined,
+				description: ev.description ?? undefined,
+				startTime: new Date(ev.start_time) ?? undefined,
+				endTime: new Date(ev.end_time) ?? undefined,
+				location: ev.location ?? undefined,
+				themes: ev.tags ?? undefined
+			}
+		});
+	} catch {
+		return new Response('Could not extract post event information', { status: 400 });
+	}
+
+	return new Response(content, { status: 200 });
 }
